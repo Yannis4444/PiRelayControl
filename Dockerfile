@@ -1,5 +1,9 @@
 FROM python:3.11-alpine
 
+ENV PYTHONUNBUFFERED=0
+
+ENV RELAY_PIN=18
+
 WORKDIR /app
 
 RUN apk add build-base

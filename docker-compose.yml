@@ -10,5 +10,7 @@ services:
       - "/sys:/sys"
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
+    environment:
+      - RELAY_PIN=18  # Change 18 to your GPIO pin number
     restart: unless-stopped
     privileged: true

@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Query
 import RPi.GPIO as GPIO
 import asyncio
@@ -12,7 +14,7 @@ app = FastAPI()
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
-relay_pin = 18  # Adjust to your GPIO pin
+relay_pin = int(os.getenv('RELAY_PIN'))
 GPIO.setup(relay_pin, GPIO.OUT)
 
 toggle_task: asyncio.Task = None  # Task for handling delayed toggle
