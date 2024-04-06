@@ -10,7 +10,13 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Raspberry Pi Relay Control",
+    description="This is a RESTful API designed to control a relay connected to a Raspberry Pi via GPIO pins. "
+                "It allows for turning the relay on, off, and toggling its state with optional automatic "
+                "toggling back after a specified duration. Visit https://github.com/Yannis4444/PiRelayControl for more information.",
+    version="1.0.0",
+)
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
