@@ -47,11 +47,12 @@ This project provides a RESTful API to control a relay module connected to a Ras
 
 ## API Endpoints
 
+- **Get Relay Status**: `GET /relay/status`
 - **Turn Relay On**: `GET /relay/on`
 - **Turn Relay Off**: `GET /relay/off`
 - **Toggle Relay State**: `GET /relay/toggle`
 
-All options support the optional `toggle_back_after` query parameter to automatically toggle back after a specified number of seconds (e.g. `/relay/on?toggle_back_after=60`).
+All options except for the status support the optional `toggle_back_after` query parameter to automatically toggle back after a specified number of seconds (e.g. `/relay/on?toggle_back_after=60`).
 
 For detailed information about the API endpoints, including request parameters and response models, visit the Swagger API documentation available at `/docs` on your Raspberry Pi's IP address and port (e.g., `http://raspberrypi.local:8080/docs`).
 

@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from fastapi import FastAPI, Query
 import RPi.GPIO as GPIO
@@ -23,11 +24,15 @@ GPIO.setmode(GPIO.BCM)
 relay_pin = int(os.getenv('RELAY_PIN'))
 GPIO.setup(relay_pin, GPIO.OUT)
 
-toggle_task: asyncio.Task = None  # Task for handling delayed toggle
+toggle_task: Optional[asyncio.Task] = None  # Task for handling delayed toggle
 
 
 class RelayResponse(BaseModel):
     message: str
+
+
+class RelayStatusResponse(BaseModel):
+    on: bool  # True if the relay is on, False if off
 
 
 async def toggle_relay_state_after(toggle_back_after: int):
@@ -43,6 +48,12 @@ def cancel_existing_task():
     if toggle_task and not toggle_task.done():
         toggle_task.cancel()
         logger.info("Existing toggle task canceled")
+
+
+@app.get("/relay/status", response_model=RelayStatusResponse, tags=["Relay Control"], summary="Get Relay Status")
+async def get_relay_status():
+    current_state = GPIO.input(relay_pin)
+    return {"on": bool(current_state)}
 
 
 @app.get("/relay/on", response_model=RelayResponse, tags=["Relay Control"])
