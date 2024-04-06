@@ -5,7 +5,7 @@ services:
     container_name: pi-relay-control
     build: .
     ports:
-      - "8081:8080"
+      - "8080:8080"
     volumes:
       - "/sys:/sys"
     devices:
