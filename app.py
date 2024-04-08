@@ -35,8 +35,8 @@ class RelayStatusResponse(BaseModel):
     on: bool  # True if the relay is on, False if off
 
 
-async def toggle_relay_state_after(toggle_back_after: int):
-    await asyncio.sleep(toggle_back_after)
+async def toggle_relay_state_delay(toggle_delay: int):
+    await asyncio.sleep(toggle_delay)
     current_state = GPIO.input(relay_pin)
     GPIO.output(relay_pin, not current_state)
     state_msg = "on" if not current_state else "off"
@@ -57,37 +57,46 @@ async def get_relay_status():
 
 
 @app.get("/relay/on", response_model=RelayResponse, tags=["Relay Control"])
-async def turn_relay_on(toggle_back_after: int = Query(None, alias="toggle_back_after", description="Time in seconds to automatically toggle the relay state back. Optional.")):
+async def turn_relay_on(
+        toggle_off_delay: int = Query(None, alias="toggle_off_delay", description="Time in seconds to automatically toggle the relay state back off. Optional.")
+):
     global toggle_task
     cancel_existing_task()
     GPIO.output(relay_pin, GPIO.HIGH)
     logger.info("Relay turned on")
-    if toggle_back_after:
-        toggle_task = asyncio.create_task(toggle_relay_state_after(toggle_back_after))
+    if toggle_off_delay:
+        toggle_task = asyncio.create_task(toggle_relay_state_delay(toggle_off_delay))
     return {"message": "Relay turned on"}
 
 
 @app.get("/relay/off", response_model=RelayResponse, tags=["Relay Control"])
-async def turn_relay_off(toggle_back_after: int = Query(None, alias="toggle_back_after", description="Time in seconds to automatically toggle the relay state back. Optional.")):
+async def turn_relay_off(
+        toggle_on_delay: int = Query(None, alias="toggle_on_delay", description="Time in seconds to automatically toggle the relay state back on. Optional.")
+):
     global toggle_task
     cancel_existing_task()
     GPIO.output(relay_pin, GPIO.LOW)
     logger.info("Relay turned off")
-    if toggle_back_after:
-        toggle_task = asyncio.create_task(toggle_relay_state_after(toggle_back_after))
+    if toggle_on_delay:
+        toggle_task = asyncio.create_task(toggle_relay_state_delay(toggle_on_delay))
     return {"message": "Relay turned off"}
 
 
 @app.get("/relay/toggle", response_model=RelayResponse, tags=["Relay Control"])
-async def toggle_relay(toggle_back_after: int = Query(None, alias="toggle_back_after", description="Time in seconds to automatically toggle the relay state back. Optional.")):
+async def toggle_relay(
+        toggle_on_delay: int = Query(None, alias="toggle_on_delay", description="Time in seconds to automatically toggle the relay state back on when toggled off. Optional."),
+        toggle_off_delay: int = Query(None, alias="toggle_off_delay", description="Time in seconds to automatically toggle the relay state back off when toggled on. Optional.")
+):
     global toggle_task
     cancel_existing_task()
     current_state = GPIO.input(relay_pin)
     GPIO.output(relay_pin, not current_state)
     new_state_msg = "on" if not current_state else "off"
     logger.info(f"Relay toggled to {new_state_msg}")
-    if toggle_back_after:
-        toggle_task = asyncio.create_task(toggle_relay_state_after(toggle_back_after))
+    if current_state and toggle_off_delay:
+        toggle_task = asyncio.create_task(toggle_relay_state_delay(toggle_off_delay))
+    elif not current_state and toggle_on_delay:
+        toggle_task = asyncio.create_task(toggle_relay_state_delay(toggle_on_delay))
     return {"message": f"Relay toggled to {new_state_msg}"}
 
 

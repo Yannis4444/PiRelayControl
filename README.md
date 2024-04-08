@@ -47,12 +47,27 @@ This project provides a RESTful API to control a relay module connected to a Ras
 
 ## API Endpoints
 
-- **Get Relay Status**: `GET /relay/status`
-- **Turn Relay On**: `GET /relay/on`
-- **Turn Relay Off**: `GET /relay/off`
-- **Toggle Relay State**: `GET /relay/toggle`
+Based on the provided OpenAPI JSON, your REST interface for "Raspberry Pi Relay Control" offers endpoints for controlling a relay connected to a Raspberry Pi through GPIO pins. This RESTful API enables users to get the current status of the relay, turn it on or off, and toggle its state, with optional automatic reversal after a set duration. Here's a short overview of each endpoint:
 
-All options except for the status support the optional `toggle_back_after` query parameter to automatically toggle back after a specified number of seconds (e.g. `/relay/on?toggle_back_after=60`).
+1. **Get Relay Status (`/relay/status`)**
+   - **Method**: GET
+   - **Description**: Retrieves the current status of the relay, indicating whether it is on or off.
+   - **Response**: The current state of the relay as a boolean value (`true` for on, `false` for off) in JSON format.
+
+2. **Turn Relay On (`/relay/on`)**
+   - **Method**: GET
+   - **Description**: Activates the relay, optionally allowing for an automatic turn-off after a specified delay.
+   - **Parameters**: An optional `toggle_off_delay` query parameter can be provided to specify the time in seconds after which the relay should automatically turn off.
+
+3. **Turn Relay Off (`/relay/off`)**
+   - **Method**: GET
+   - **Description**: Deactivates the relay, with an option to automatically turn it back on after a specified delay.
+   - **Parameters**: An optional `toggle_on_delay` query parameter can be included to set the time in seconds for the relay to automatically turn back on.
+
+4. **Toggle Relay (`/relay/toggle`)**
+   - **Method**: GET
+   - **Description**: Toggles the relay's current state from on to off or vice versa. It also supports automatic re-toggling based on provided delay parameters for both states.
+   - **Parameters**: Optional `toggle_on_delay` and `toggle_off_delay` query parameters can be used to define the time in seconds for automatic re-toggling when the relay is turned off and on, respectively.
 
 For detailed information about the API endpoints, including request parameters and response models, visit the Swagger API documentation available at `/docs` on your Raspberry Pi's IP address and port (e.g., `http://raspberrypi.local:8080/docs`).
 
